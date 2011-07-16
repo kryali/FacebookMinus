@@ -7,6 +7,10 @@
   <%= csrf_meta_tag %>
 </head>
 <body>
+<div id="fb-root"></div>
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+<%= javascript_include_tag "fb.js" %>
+
 <%= yield %>
 
 </body>
