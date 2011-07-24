@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  text-decoration: none;
+  font-family: 'arial';
+  line-height: 18px;
+  font-size: 13px;
+}
+
+#feed {
+  margin: 0 auto;
+  width: 574px;
+  border: 1px solid #EBEBEB;
+}
+
+#feed li {
+  border-bottom: 1px solid #EBEBEB;
+  padding: 16px 21px;
+  position: relative;
+  overflow: hidden;
+}
+
+#feed .name {
+  font-weight: bold;
+  color: #36C;
+}
+
+#feed img {
+  float: left;
+  padding-right: 13px;
+}
+
+#feed #postContents {
+  float: left;
+  width: 469px;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.grey {
+  color: #999;
+}
+
+#postHeader{
+   padding-bottom: 4px;
+}
