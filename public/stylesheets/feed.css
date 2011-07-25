@@ -33,7 +33,8 @@
 
 #feed #postContents {
   float: left;
-  width: 469px;
+  width: 425px;
+  margin-right: 44px;
 }
 a:hover {
   text-decoration: underline;

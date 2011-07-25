@@ -1,3 +1,4 @@
+var sep = "&nbsp;&nbsp;-&nbsp;&nbsp;";
 $("#fb-login").css("display","none");
 
 String.prototype.capitalize = function() {
@@ -28,33 +29,33 @@ FB.Event.subscribe('auth.login', function(response) {
   }
 });
 
-/* getFeedItem returns a list feed item */
-
-var getFeedItem = function(data) {
-  var listItem = document.createElement("li");
+/* parseFeedItem returns a list feed item */
+var parseFeedItem = function(data) {
+  var feedPost = document.createElement("li");
 
   /* Profile image */
-  var img = document.createElement("img");
-  img.setAttribute("src", "http://graph.facebook.com/"+ data['from']['id'] + "/picture" );
+  var profileImage = document.createElement("img");
+  profileImage.setAttribute("src", "http://graph.facebook.com/"+ data['from']['id'] + "/picture" );
 
+  /* Add them to the list item */
+  feedPost.appendChild(profileImage);
+  feedPost.appendChild(parsePostContents(data));
+
+  console.log(feedPost);
+  return feedPost;
+}
+
+var parsePostContents = function(data){
   var postContents = document.createElement("div");
   postContents.setAttribute("id", "postContents");
 
-  /* Name */
-  var name = document.createElement("a");
-  name.className = "name";
-  name.innerHTML = data['from']['name'];
-  name.setAttribute("href", "http://facebook.com/profile.php?id=" + data["from"]["id"]);
+  postContents.appendChild(parsePostHeader(data));
+  postContents.appendChild(parsePostBody(data));
 
-  /* Header */
-  /* Time */
-  var date = formatFBTime(data['created_time']);
-  date = feedTime(date);
+  return postContents;
+}
 
-  var headerSubText = document.createElement("span");
-  headerSubText.className = "header grey";
-  headerSubText.innerHTML = "&nbsp;&nbsp;-&nbsp;&nbsp;" + date;
-  headerSubText.innerHTML += "&nbsp;&nbsp;-&nbsp;&nbsp;" + data["type"].capitalize();
+function parsePostBody(data){
 
   /* Message */
   var message;
@@ -64,22 +65,36 @@ var getFeedItem = function(data) {
     message.innerHTML = data['message'];
   }
 
+  var postBody = document.createElement("div");
+  if( (data['message']) != undefined)
+    postBody.appendChild(message);
+  return postBody;
+}
+
+function parsePostHeader(data){
+  /* Header */
+  /* Name */
+  var name = document.createElement("a");
+  name.className = "name";
+  name.innerHTML = data['from']['name'];
+  name.setAttribute("href", "http://facebook.com/profile.php?id=" + data["from"]["id"]);
+
+  /* Time */
+  var date = formatFBTime(data['created_time']);
+  date = feedTime(date);
+
+  var headerSubText = document.createElement("span");
+  headerSubText.className = "header grey";
+  headerSubText.innerHTML = sep + date;
+  headerSubText.innerHTML += sep + data["type"].capitalize();
+
   /* Build up the header */
   var postHeader = document.createElement("div");
   postHeader.setAttribute("id", "postHeader");
   postHeader.appendChild(name);
   postHeader.appendChild(headerSubText);
 
-  postContents.appendChild(postHeader);
-  if( (data['message']) != undefined)
-    postContents.appendChild(message);
-
-  /* Add them to the list item */
-  listItem.appendChild(img);
-  listItem.appendChild(postContents);
-
-  console.log(listItem);
-  return listItem;
+  return postHeader;
 }
 
 function feedTime(date) {
@@ -118,9 +133,9 @@ var initFeed = function(){
   FB.api('/me/home', function(feed){
     for( var i = 0; i < feed['data'].length; i++){
       var feedItem = feed['data'][i];
-//      $("#feed").appendChild(getFeedItem(feedItem));
+//      $("#feed").appendChild(parseFeedItem(feedItem));
       console.log(feedItem);
-      document.getElementById("feed").appendChild(getFeedItem(feedItem));
+      document.getElementById("feed").appendChild(parseFeedItem(feedItem));
     }
   });
 }
