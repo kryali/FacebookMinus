@@ -119,3 +119,15 @@ a:hover {
    cursor: text;
    color: #999;
 }
+
+#feed #likes {
+   height: 15px;
+   border-top: 1px solid #DDD;
+   padding: 8px 0 13px 8px;
+}
+
+.likes-count {
+   color: #36C;
+   font-style: italic;
+   font-weight: bold;
+}

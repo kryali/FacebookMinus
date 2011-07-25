@@ -64,10 +64,12 @@ var parsePostContents = function(data){
 
   postContents.appendChild(parsePostHeader(data));
   postContents.appendChild(parsePostBody(data));
-  if( data["actions"] )
+   if( data["actions"] )
      postContents.appendChild(parsePostActions(data));
-  if( data["comments"] )
-     postContents.appendChild(parsePostComments(data));
+   if( data["likes"] )
+      postContents.appendChild(parsePostLikes(data));
+   if( data["comments"] )
+      postContents.appendChild(parsePostComments(data));
 
   return postContents;
 }
@@ -145,7 +147,7 @@ function parsePostHeader(data){
    if(data['to']){
       postHeader.innerHTML += " <img src='http://i.imgur.com/SJG7Z.png'/> ";
      var to = document.createElement("a");
-     to.className = "to";
+     to.className = "name";
      to.innerHTML = data['to']['data'][0]['name'];
      to.setAttribute("href", FBProfileLink(data["to"]["data"][0]["id"]));
      postHeader.appendChild(to);
@@ -225,6 +227,13 @@ var parsePostComments = function(data) {
    return postComments;
 }
 
+var parsePostLikes = function(data) {
+   var postLikes = document.createElement("div");
+   postLikes.setAttribute("id", "likes");
+   postLikes.innerHTML = "<span class='likes-count'>" + data["likes"].count + "</span> people like this.";
+   return postLikes;
+}
+
 function feedTime(date) {
   var hours = date.getHours();
 
@@ -260,7 +269,7 @@ var initFeed = function(){
   FB.api('/me/home', function(feed){
     for( var i = 0; i < feed['data'].length; i++){
       var feedItem = feed['data'][i];
-      console.log(feedItem);
+ //     console.log(feedItem);
       document.getElementById("feed").appendChild(parseFeedItem(feedItem));
     }
   });
@@ -269,3 +278,14 @@ var initFeed = function(){
 var init = function(){
   initFeed();
 };
+
+console.log(window);
+
+var checkWindowPosition = function(){
+   if( window.innerHeight + document.body.scrollTop >= document.body.offsetHeight ){
+      // TODO: IE
+      initFeed();
+   }
+}
+
+var t = setInterval("checkWindowPosition()", 500);
