@@ -34,11 +34,16 @@ var parseFeedItem = function(data) {
   var feedPost = document.createElement("li");
 
   /* Profile image */
+  var name = document.createElement("a");
+  name.setAttribute("href", "http://facebook.com/profile.php?id=" + data["from"]["id"]);
+
   var profileImage = document.createElement("img");
   profileImage.setAttribute("src", "http://graph.facebook.com/"+ data['from']['id'] + "/picture" );
+  profileImage.setAttribute("id", "profile-img" );
 
+   name.appendChild(profileImage);
   /* Add them to the list item */
-  feedPost.appendChild(profileImage);
+  feedPost.appendChild(name);
   feedPost.appendChild(parsePostContents(data));
 
   console.log(feedPost);
@@ -56,18 +61,55 @@ var parsePostContents = function(data){
 }
 
 function parsePostBody(data){
+  var postBody = document.createElement("div");
 
   /* Message */
-  var message;
-  if( (data['message']) != undefined){
-    message = document.createElement("span");
+  if( (data['message']) ){
+    var message = document.createElement("div");
     message.className = "message";
     message.innerHTML = data['message'];
+    postBody.appendChild(message);
   }
 
-  var postBody = document.createElement("div");
-  if( (data['message']) != undefined)
-    postBody.appendChild(message);
+  /* Link */
+  if( data['link'] )
+  {
+      var linkHeader = document.createElement("div");
+      linkHeader.setAttribute("id", "bodyHeader");
+
+      if( data['type'] != "photo"){
+        var icon = document.createElement("img");
+        icon.setAttribute("src", data["icon"]);
+        icon.setAttribute("id", "icon");
+        linkHeader.appendChild(icon);
+      }
+
+      var link = document.createElement("a");
+      link.setAttribute("href", data["link"]);
+      link.innerHTML = data["name"];
+      link.className = "link";
+      linkHeader.appendChild(link);
+
+      postBody.appendChild(linkHeader);
+
+      if( data['description'] ){
+        var linkDescription = document.createElement("p");
+        linkDescription.innerHTML = data["description"];
+        postBody.appendChild(linkDescription);
+      }
+
+  }
+
+  /* Photo */
+  if( data['picture'] ){
+    var photoLink = document.createElement("a");
+    photoLink.setAttribute("href", data["link"]);
+    var photo = document.createElement("img"); 
+    photo.setAttribute("src", data["picture"]);
+    photoLink.appendChild(photo);
+    postBody.appendChild(photoLink);
+  }
+
   return postBody;
 }
 

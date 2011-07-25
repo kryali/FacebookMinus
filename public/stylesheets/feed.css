@@ -23,18 +23,38 @@
 
 #feed .name {
   font-weight: bold;
-  color: #36C;
 }
 
-#feed img {
+#feed #profile-img {
   float: left;
   padding-right: 13px;
+}
+
+#feed #picture, #linkBody {
+   float:left;
+}
+
+#feed #icon {
+  padding-right: 7px;
+  display: block;
+  float: left;
+}
+
+#feed .link {
+  font-weight: bold;
+}
+
+#feed #bodyHeader {
+   padding-bottom: 5px;
 }
 
 #feed #postContents {
   float: left;
   width: 425px;
   margin-right: 44px;
+}
+a {
+  color: #36C;
 }
 a:hover {
   text-decoration: underline;
@@ -45,5 +65,9 @@ a:hover {
 }
 
 #postHeader{
-   padding-bottom: 4px;
+   padding-bottom: 5px;
+}
+
+.message {
+   padding-bottom: 5px;
 }
