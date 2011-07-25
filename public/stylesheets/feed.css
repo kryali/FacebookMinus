@@ -44,7 +44,16 @@
   font-weight: bold;
 }
 
+#feed #body {
+   overflow: hidden;
+   padding-bottom: 5px;
+}
+
 #feed #bodyHeader {
+   padding-bottom: 5px;
+}
+
+#feed #postActions {
    padding-bottom: 5px;
 }
 
@@ -77,3 +86,36 @@ a:hover {
    margin-right: 8px;
 }
 
+#postComments li {
+   padding: 8px;
+   border-bottom: none;
+   border-top: 1px dotted #CCC;
+}
+
+#postComments li img {
+   width: 32px;
+   height: 32px;
+   float: left;
+   padding-right: 5px;
+}
+
+#postComments #message {
+   float: left;
+   width: 50px;
+}
+
+#postComments li a {
+}
+
+.add-comment {
+   padding: 2px 7px;
+   width: 100%;
+   box-sizing: border-box;
+   -moz-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   position:relative;
+   margin-top: -1px;
+   border: 1px solid #DDD;
+   cursor: text;
+   color: #999;
+}

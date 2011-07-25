@@ -6,7 +6,7 @@ String.prototype.capitalize = function() {
 }
 
 FB.init({
-  appId  : '205668742817032',
+  appId  : '237283539637022',
   status : true, // check login status
   cookie : true, // enable cookies to allow the server to access the session
   xfbml  : true  // parse XFBML
@@ -29,16 +29,24 @@ FB.Event.subscribe('auth.login', function(response) {
   }
 });
 
+var FBProfileImage = function(id){
+   return "http://graph.facebook.com/"+ id + "/picture" ;
+}
+
+var FBProfileLink = function(id){
+   return "http://facebook.com/profile.php?id=" + id;
+}
+
 /* parseFeedItem returns a list feed item */
 var parseFeedItem = function(data) {
   var feedPost = document.createElement("li");
 
   /* Profile image */
   var name = document.createElement("a");
-  name.setAttribute("href", "http://facebook.com/profile.php?id=" + data["from"]["id"]);
+  name.setAttribute("href", FBProfileLink(data["from"]["id"]));
 
   var profileImage = document.createElement("img");
-  profileImage.setAttribute("src", "http://graph.facebook.com/"+ data['from']['id'] + "/picture" );
+  profileImage.setAttribute("src", FBProfileImage(data["from"]["id"]));
   profileImage.setAttribute("id", "profile-img" );
 
    name.appendChild(profileImage);
@@ -56,6 +64,10 @@ var parsePostContents = function(data){
 
   postContents.appendChild(parsePostHeader(data));
   postContents.appendChild(parsePostBody(data));
+  if( data["actions"] )
+     postContents.appendChild(parsePostActions(data));
+  if( data["comments"] )
+     postContents.appendChild(parsePostComments(data));
 
   return postContents;
 }
@@ -107,7 +119,6 @@ function parsePostBody(data){
   }
 
    if( data['type'] == "link" ){
-      console.log("THIS IS A LINK!!");
       if( data['picture'] )
         postBody.appendChild(photoLink);
       postBody.appendChild(bodyContents);
@@ -117,18 +128,28 @@ function parsePostBody(data){
        postBody.appendChild(photoLink)
    }
 
-
-
   return postBody;
 }
 
 function parsePostHeader(data){
+  var postHeader = document.createElement("div");
+  postHeader.setAttribute("id", "postHeader");
   /* Header */
   /* Name */
-  var name = document.createElement("a");
-  name.className = "name";
-  name.innerHTML = data['from']['name'];
-  name.setAttribute("href", "http://facebook.com/profile.php?id=" + data["from"]["id"]);
+  var from = document.createElement("a");
+  from.className = "name";
+  from.innerHTML = data['from']['name'];
+  from.setAttribute("href", FBProfileLink(data["from"]["id"]));
+  postHeader.appendChild(from);
+
+   if(data['to']){
+      postHeader.innerHTML += " <img src='http://i.imgur.com/SJG7Z.png'/> ";
+     var to = document.createElement("a");
+     to.className = "to";
+     to.innerHTML = data['to']['data'][0]['name'];
+     to.setAttribute("href", FBProfileLink(data["to"]["data"][0]["id"]));
+     postHeader.appendChild(to);
+  }
 
   /* Time */
   var date = formatFBTime(data['created_time']);
@@ -140,9 +161,6 @@ function parsePostHeader(data){
   headerSubText.innerHTML += sep + data["type"].capitalize();
 
   /* Build up the header */
-  var postHeader = document.createElement("div");
-  postHeader.setAttribute("id", "postHeader");
-  postHeader.appendChild(name);
   postHeader.appendChild(headerSubText);
 
   if( (data['message']) ){
@@ -155,21 +173,67 @@ function parsePostHeader(data){
   return postHeader;
 }
 
-function parsePostFooter(data){
-   var postFooter = document.createElement("div");
-   postFooter.setAttribute("id", "postFooter");
+function parsePostActions(data){
+   var postActions = document.createElement("div");
+   postActions.setAttribute("id", "postActions");
+   var currentAction;
+   for(var i = 0; i < data["actions"].length; i++){
+      currentAction = data["actions"][i];
+      var postAction = document.createElement("a");
+      postAction.innerHTML = currentAction["name"];
+      postAction.setAttribute("href", currentAction["link"]);
+      postActions.appendChild(postAction);
+      if( i+1 != data["actions"].length)
+         postActions.innerHTML += sep;
+   }
+
+   return postActions;
+}
+
+var parsePostComments = function(data) {
+   var postComments = document.createElement("ul");
+   postComments.setAttribute("id", "postComments");
+   var currentComment, commentItem, commentImage, commentLink, p;
+   for(var i = 0; i < data["comments"].count; i++){
+      currentComment = data["comments"]["data"][i];
+      commentItem = document.createElement("li");
+
+      commentImage = document.createElement("img");
+      commentImage.setAttribute("src", FBProfileImage(currentComment["from"]["id"]));
+      commentItem.appendChild(commentImage);
+
+      commentLink = document.createElement("a");
+      commentLink.setAttribute("href", FBProfileLink(currentComment["from"]["id"]));
+      commentLink.innerHTML = currentComment["from"]["name"];
+      commentItem.appendChild(commentLink);
+
+      p = document.createElement("p");
+      p.innerHTML = currentComment["message"];
+      commentItem.appendChild(p);
+
+      postComments.appendChild(commentItem);
+   }
+
+   var commentForm = document.createElement("form");
+   var commentBox = document.createElement("input");
+   commentBox.setAttribute("type", "text");
+   commentBox.setAttribute("placeholder", "Add a comment...");
+   commentBox.className = "add-comment";
+   commentForm.appendChild(commentBox);
+
+   postComments.appendChild(commentForm);
+   return postComments;
 }
 
 function feedTime(date) {
   var hours = date.getHours();
 
   var clock = "AM";
-  if(hours >= 12 && hours != 24){
+  if(hours >= 12 && hours != 24)
     clock = "PM";
-  }
-  if(hours > 12) {
+
+  if(hours > 12) 
     hours -= 12;
-  }
 
   var minutes = date.getMinutes();
   if(minutes < 10)
@@ -193,10 +257,9 @@ function formatFBTime(fbDate){
 }
 
 var initFeed = function(){
-  FB.api('/me/home', function(feed){
+  FB.api('/me/feed', function(feed){
     for( var i = 0; i < feed['data'].length; i++){
       var feedItem = feed['data'][i];
-//      $("#feed").appendChild(parseFeedItem(feedItem));
       console.log(feedItem);
       document.getElementById("feed").appendChild(parseFeedItem(feedItem));
     }
