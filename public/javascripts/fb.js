@@ -62,18 +62,14 @@ var parsePostContents = function(data){
 
 function parsePostBody(data){
   var postBody = document.createElement("div");
+  postBody.setAttribute("id", "body");
 
-  /* Message */
-  if( (data['message']) ){
-    var message = document.createElement("div");
-    message.className = "message";
-    message.innerHTML = data['message'];
-    postBody.appendChild(message);
-  }
+  var bodyContents = document.createElement("div");
 
   /* Link */
   if( data['link'] )
   {
+      bodyContents.setAttribute("id", "bodyContents");
       var linkHeader = document.createElement("div");
       linkHeader.setAttribute("id", "bodyHeader");
 
@@ -90,25 +86,38 @@ function parsePostBody(data){
       link.className = "link";
       linkHeader.appendChild(link);
 
-      postBody.appendChild(linkHeader);
+      bodyContents.appendChild(linkHeader);
 
       if( data['description'] ){
         var linkDescription = document.createElement("p");
         linkDescription.innerHTML = data["description"];
-        postBody.appendChild(linkDescription);
+        bodyContents.appendChild(linkDescription);
       }
-
   }
 
   /* Photo */
+  var photoLink;
   if( data['picture'] ){
-    var photoLink = document.createElement("a");
+    photoLink= document.createElement("a");
+    photoLink.setAttribute("id", "linkIMG");
     photoLink.setAttribute("href", data["link"]);
     var photo = document.createElement("img"); 
     photo.setAttribute("src", data["picture"]);
     photoLink.appendChild(photo);
-    postBody.appendChild(photoLink);
   }
+
+   if( data['type'] == "link" ){
+      console.log("THIS IS A LINK!!");
+      if( data['picture'] )
+        postBody.appendChild(photoLink);
+      postBody.appendChild(bodyContents);
+   } else { 
+     postBody.appendChild(bodyContents);
+      if( data['picture'] )
+       postBody.appendChild(photoLink)
+   }
+
+
 
   return postBody;
 }
@@ -136,7 +145,19 @@ function parsePostHeader(data){
   postHeader.appendChild(name);
   postHeader.appendChild(headerSubText);
 
+  if( (data['message']) ){
+    var message = document.createElement("div");
+    message.className = "message";
+    message.innerHTML = data['message'];
+    postHeader.appendChild(message);
+  }
+
   return postHeader;
+}
+
+function parsePostFooter(data){
+   var postFooter = document.createElement("div");
+   postFooter.setAttribute("id", "postFooter");
 }
 
 function feedTime(date) {

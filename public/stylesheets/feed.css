@@ -69,5 +69,11 @@ a:hover {
 }
 
 .message {
-   padding-bottom: 5px;
+   padding: 5px 0 0 0;
 }
+
+#linkIMG {
+   float: left;
+   margin-right: 8px;
+}
+
