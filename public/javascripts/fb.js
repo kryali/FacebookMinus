@@ -194,7 +194,7 @@ var parsePostComments = function(data) {
    var postComments = document.createElement("ul");
    postComments.setAttribute("id", "postComments");
    var currentComment, commentItem, commentImage, commentLink, p;
-   for(var i = 0; i < data["comments"].count; i++){
+   for(var i = 0; i < data["comments"].length; i++){
       currentComment = data["comments"]["data"][i];
       commentItem = document.createElement("li");
 
@@ -257,7 +257,7 @@ function formatFBTime(fbDate){
 }
 
 var initFeed = function(){
-  FB.api('/me/feed', function(feed){
+  FB.api('/me/home', function(feed){
     for( var i = 0; i < feed['data'].length; i++){
       var feedItem = feed['data'][i];
       console.log(feedItem);
