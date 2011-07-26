@@ -265,13 +265,16 @@ function formatFBTime(fbDate){
   return valid_date;
 }
 
+page = "/me/home";
+
 var initFeed = function(){
-  FB.api('/me/home', function(feed){
+  FB.api(page, function(feed){
     for( var i = 0; i < feed['data'].length; i++){
       var feedItem = feed['data'][i];
  //     console.log(feedItem);
       document.getElementById("feed").appendChild(parseFeedItem(feedItem));
     }
+    page = "/me/home?limit=25&" + feed["paging"]["next"].match(/until=[0-9]*/);
   });
 }
 
@@ -281,11 +284,11 @@ var init = function(){
 
 console.log(window);
 
+
 var checkWindowPosition = function(){
-   if( window.innerHeight + document.body.scrollTop >= document.body.offsetHeight ){
-      // TODO: IE
+   if( window.innerHeight + document.body.scrollTop >= document.body.offsetHeight  && document.body.offsetHeight > 100){
       initFeed();
    }
 }
 
-var t = setInterval("checkWindowPosition()", 500);
+var t = setInterval("checkWindowPosition()", 2000);
