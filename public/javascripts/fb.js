@@ -196,7 +196,7 @@ var parsePostComments = function(data) {
    var postComments = document.createElement("ul");
    postComments.setAttribute("id", "postComments");
    var currentComment, commentItem, commentImage, commentLink, p;
-   for(var i = 0; i < data["comments"].length; i++){
+   for(var i = 0; i < data["comments"]["data"].length; i++){
       currentComment = data["comments"]["data"][i];
       commentItem = document.createElement("li");
 
@@ -230,7 +230,12 @@ var parsePostComments = function(data) {
 var parsePostLikes = function(data) {
    var postLikes = document.createElement("div");
    postLikes.setAttribute("id", "likes");
-   postLikes.innerHTML = "<span class='likes-count'>" + data["likes"].count + "</span> people like this.";
+   postLikes.innerHTML = "<span class='likes-count'>" + data["likes"].count + "</span> ";
+   if( data["likes"].count == 1 )
+      postLikes.innerHTML += "person likes";
+   else
+      postLikes.innerHTML += "people like";
+   postLikes.innerHTML += " this.";
    return postLikes;
 }
 
@@ -267,13 +272,27 @@ function formatFBTime(fbDate){
 
 page = "/me/home";
 
+var morePostsButton = function(){
+	var button = document.createElement("a");
+	button.innerHTML = "More";
+	button.setAttribute("id", "more-posts");
+	button.setAttribute("href", "#");
+	button.onclick = function(e){
+		initFeed();
+		this.style.display = 'none';
+		e.preventDefault();
+	};
+	return button;
+}
+
 var initFeed = function(){
   FB.api(page, function(feed){
     for( var i = 0; i < feed['data'].length; i++){
       var feedItem = feed['data'][i];
- //     console.log(feedItem);
+	  console.log(feedItem);
       document.getElementById("feed").appendChild(parseFeedItem(feedItem));
     }
+	document.getElementById("feed").appendChild(morePostsButton());
     page = "/me/home?limit=25&" + feed["paging"]["next"].match(/until=[0-9]*/);
   });
 }
@@ -282,13 +301,11 @@ var init = function(){
   initFeed();
 };
 
-console.log(window);
-
-
 var checkWindowPosition = function(){
-   if( window.innerHeight + document.body.scrollTop >= document.body.offsetHeight  && document.body.offsetHeight > 100){
+   if( window.innerHeight + document.body.scrollTop >=
+		document.body.offsetHeight  && document.body.offsetHeight > 100){
       initFeed();
    }
 }
 
-var t = setInterval("checkWindowPosition()", 2000);
+//var t = setInterval("checkWindowPosition()", 2000);
