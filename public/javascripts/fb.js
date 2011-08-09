@@ -2,112 +2,112 @@ var sep = "&nbsp;&nbsp;-&nbsp;&nbsp;";
 $("#fb-login").css("display","none");
 
 String.prototype.capitalize = function() {
-  return this.charAt(0).toUpperCase() + this.slice(1);
+	return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
 FB.init({
-  appId  : '237283539637022',
-  status : true, // check login status
-  cookie : true, // enable cookies to allow the server to access the session
-  xfbml  : true  // parse XFBML
+	appId  : '237283539637022',
+	status : true, // check login status
+	cookie : true, // enable cookies to allow the server to access the session
+	xfbml  : true  // parse XFBML
 });
 FB.getLoginStatus(function(response) {
-  if (response.session) {
-    init();
-    // logged in and connected user, someone you know
-  } else {
-    // no user session available, someone you dont know
-    $("#fb-login").css("display","block");
-  }
+	if (response.session) {
+		init();
+		// logged in and connected user, someone you know
+	} else {
+		// no user session available, someone you dont know
+		$("#fb-login").css("display","block");
+	}
 });
 
 //Actions to take upon the user logging in
 FB.Event.subscribe('auth.login', function(response) {
-  if(response.session) {
-    $("#fb-login").css("display","none");
-    init();
-  }
+	if(response.session) {
+		$("#fb-login").css("display","none");
+		init();
+	}
 });
 
 var FBProfileImage = function(id){
-   return "http://graph.facebook.com/"+ id + "/picture" ;
+	return "http://graph.facebook.com/"+ id + "/picture" ;
 }
 
 var FBProfileLink = function(id){
-   return "http://facebook.com/profile.php?id=" + id;
+	return "http://facebook.com/profile.php?id=" + id;
 }
 
 /* parseFeedItem returns a list feed item */
 var parseFeedItem = function(data) {
-  var feedPost = document.createElement("li");
+	var feedPost = document.createElement("li");
 
-  /* Profile image */
-  var name = document.createElement("a");
-  name.setAttribute("href", FBProfileLink(data["from"]["id"]));
+	/* Profile image */
+	var name = document.createElement("a");
+	name.setAttribute("href", FBProfileLink(data["from"]["id"]));
 
-  var profileImage = document.createElement("img");
-  profileImage.setAttribute("src", FBProfileImage(data["from"]["id"]));
-  profileImage.setAttribute("id", "profile-img" );
+	var profileImage = document.createElement("img");
+	profileImage.setAttribute("src", FBProfileImage(data["from"]["id"]));
+	profileImage.setAttribute("id", "profile-img" );
 
-   name.appendChild(profileImage);
-  /* Add them to the list item */
-  feedPost.appendChild(name);
-  feedPost.appendChild(parsePostContents(data));
+	name.appendChild(profileImage);
+	/* Add them to the list item */
+	feedPost.appendChild(name);
+	feedPost.appendChild(parsePostContents(data));
 
-  console.log(feedPost);
-  return feedPost;
+	console.log(feedPost);
+	return feedPost;
 }
 
 var parsePostContents = function(data){
-  var postContents = document.createElement("div");
-  postContents.setAttribute("id", "postContents");
+	var postContents = document.createElement("div");
+	postContents.setAttribute("id", "postContents");
 
-  postContents.appendChild(parsePostHeader(data));
-  postContents.appendChild(parsePostBody(data));
-   if( data["actions"] )
-     postContents.appendChild(parsePostActions(data));
-   if( data["likes"] )
-      postContents.appendChild(parsePostLikes(data));
-   if( data["comments"] )
-      postContents.appendChild(parsePostComments(data));
+	postContents.appendChild(parsePostHeader(data));
+	postContents.appendChild(parsePostBody(data));
+	if( data["actions"] )
+		postContents.appendChild(parsePostActions(data));
+	if( data["likes"] )
+		postContents.appendChild(parsePostLikes(data));
+	if( data["comments"] )
+		postContents.appendChild(parsePostComments(data));
 
-  return postContents;
+	return postContents;
 }
 
 function parsePostBody(data){
-  var postBody = document.createElement("div");
-  postBody.setAttribute("id", "body");
+	var postBody = document.createElement("div");
+	postBody.setAttribute("id", "body");
 
-  var bodyContents = document.createElement("div");
+	var bodyContents = document.createElement("div");
 
-  /* Link */
-  if( data['link'] )
-  {
-      bodyContents.setAttribute("id", "bodyContents");
-      var linkHeader = document.createElement("div");
-      linkHeader.setAttribute("id", "bodyHeader");
+	/* Link */
+	if( data['link'] )
+	{
+	  bodyContents.setAttribute("id", "bodyContents");
+	  var linkHeader = document.createElement("div");
+	  linkHeader.setAttribute("id", "bodyHeader");
 
-      if( data['type'] != "photo"){
-        var icon = document.createElement("img");
-        icon.setAttribute("src", data["icon"]);
-        icon.setAttribute("id", "icon");
-        linkHeader.appendChild(icon);
-      }
+	  if( data['type'] != "photo"){
+		var icon = document.createElement("img");
+		icon.setAttribute("src", data["icon"]);
+		icon.setAttribute("id", "icon");
+		linkHeader.appendChild(icon);
+	  }
 
-      var link = document.createElement("a");
-      link.setAttribute("href", data["link"]);
-      link.innerHTML = data["name"];
-      link.className = "link";
-      linkHeader.appendChild(link);
+	  var link = document.createElement("a");
+	  link.setAttribute("href", data["link"]);
+	  link.innerHTML = data["name"];
+	  link.className = "link";
+	  linkHeader.appendChild(link);
 
-      bodyContents.appendChild(linkHeader);
+	  bodyContents.appendChild(linkHeader);
 
-      if( data['description'] ){
-        var linkDescription = document.createElement("p");
-        linkDescription.innerHTML = data["description"];
-        bodyContents.appendChild(linkDescription);
-      }
-  }
+	  if( data['description'] ){
+		var linkDescription = document.createElement("p");
+		linkDescription.innerHTML = data["description"];
+		bodyContents.appendChild(linkDescription);
+	  }
+	}
 
   /* Photo */
   var photoLink;
@@ -279,26 +279,27 @@ var morePostsButton = function(){
 	button.setAttribute("href", "#");
 	button.onclick = function(e){
 		initFeed();
-		this.style.display = 'none';
+//		this.style.display = 'none';
 		e.preventDefault();
 	};
 	return button;
 }
 
 var initFeed = function(){
-  FB.api(page, function(feed){
-    for( var i = 0; i < feed['data'].length; i++){
-      var feedItem = feed['data'][i];
-	  console.log(feedItem);
-      document.getElementById("feed").appendChild(parseFeedItem(feedItem));
-    }
+	FB.api(page, function(feed){
+	for( var i = 0; i < feed['data'].length; i++){
+		var feedItem = feed['data'][i];
+		console.log(feedItem);
+		document.getElementById("feed").appendChild(parseFeedItem(feedItem));
+	}
 	document.getElementById("feed").appendChild(morePostsButton());
-    page = "/me/home?limit=25&" + feed["paging"]["next"].match(/until=[0-9]*/);
-  });
+	page = "/me/home?limit=25&" + feed["paging"]["next"].match(/until=[0-9]*/);
+	});
+	document.getElementById("more-posts").style.display = "none";
 }
 
 var init = function(){
-  initFeed();
+	initFeed();
 };
 
 var checkWindowPosition = function(){
